@@ -2,7 +2,9 @@
 
 **実際の結果は未記入です。実機で操作してから記録してください。** Desktopの擬似マイク試験とiPhoneでの成功は分けます。
 
-日時：____ / 公開URL：____ / commit：____
+公開URL：<https://yutoo77.github.io/listen-capture-spike/>
+
+日時：____ / 表示commit：____
 
 iPhone：____ / iOS：____ / イヤホン・接続方式：____
 

@@ -2,7 +2,9 @@
 
 2026-10-17。iPhoneで「音声を聴く → 一時停止して声でメモ → 元の位置から聴く」が成立するかを確かめる、HTML・CSS・JavaScriptの静的な試作品です。
 
-**公開URL：公開・HTTPS到達確認待ち。** 確認済みURLは後からここへ記載します。
+**iPhoneで開く：<https://yutoo77.github.io/listen-capture-spike/>**
+
+2026-10-17 08:11 JSTに公開HTTPSと配信ファイルを確認済み。iPhoneの音声操作は実機でこれから確認します。
 
 専用公開リポジトリ：[yutoo77/listen-capture-spike](https://github.com/yutoo77/listen-capture-spike)
 

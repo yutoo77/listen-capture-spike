@@ -15,16 +15,18 @@
 |---|---|---|
 | ソース・構文・Manifest・アセット確認 | `npm run check` 成功 | ファイルの整合性。実際の録音品質は証明しない |
 | Desktopブラウザ回帰試験 | Chromium 151.0.7922.34、16/16成功 | 擬似マイク等による操作・保存・状態遷移。iPhone固有の挙動は証明しない |
-| 公開HTTPS・アセット到達確認 | 公開待ち | 外部から取得できること。iPhoneでの音声操作は証明しない |
+| 公開HTTPS・アセット到達確認 | 2026-10-17 08:11 JSTに成功 | 外部から取得できること。iPhoneでの音声操作は証明しない |
 | iPhone Safari | 未検証 | 実機テストが必要 |
 | ホーム画面版 | 未検証 | Safariとの差を実機で確認する |
 | Bluetooth・ロック画面・割込み | 未検証 | 実機・実イヤホンが必要 |
 
-公開URL：**未確定・HTTPS到達確認待ち**
+公開URL：<https://yutoo77.github.io/listen-capture-spike/>
 
-専用公開リポジトリ：[yutoo77/listen-capture-spike](https://github.com/yutoo77/listen-capture-spike)（作成済み。サイトの公開完了とは区別）
+専用公開リポジトリ：[yutoo77/listen-capture-spike](https://github.com/yutoo77/listen-capture-spike)
 
-公開commit：**未記入**
+公開コードcommit：`35e438a3365c7fa41edd4de193a8cf065f895737`
+
+`app.js` SHA-256：`d7e3899092be75bb035c52f97121c3c7249852d511c5d5bde8a5361799c63842`
 
 ## 実施結果
 
@@ -33,9 +35,11 @@
 - Chromiumの`fake-device`／`fake-ui`を使用し、物理マイクは不使用。自動再生制限を無効化するオプションは付けていません。
 - 録音Blobの再生、ダウンロードのbyte数一致、IndexedDB再読込、印・削除・元位置への復帰、録音中の操作制限、同名別内容ファイルの照合、ログへの情報漏出を検証。
 - マイク拒否、自動再生拒否、録音Track終了、DBの`QuotaExceededError`は**注入した障害**です。回復分岐を確認した結果であり、実機上の自然発生障害を再現した主張ではありません。保存失敗した2件の救済ダウンロード保持と再保存も確認。
+- 追加の回復試験は、①DB保存成功後の一覧DOM更新失敗で保存済みとして扱い再読込後も存在、②マイク準備キャンセル後に遅れて取得したstreamの全Trackを解放し次の録音が可能、③60秒の上限をテスト内だけ2秒へ加速し中断録音の保存・マイク解放・自動再開なし、の3件です。
 - 390×844と1440×1000で横方向overflowなし。`artifacts/test-results/`のスクリーンショットを担当者とrootが目視確認。
-- 初回は12件中11件成功。失敗1件はテスト内の`fetch(blob:)`を意図したCSPが拒否したもの。テストを実際のダウンロード経路の確認へ直し、ケース追加後に16/16成功。**この失敗のためにアプリのCSPは緩和していません。**
-- HTTPS確認：未記入。トップページ・JS・CSS・Manifest・デモ音声・アイコンを対象にする。
+- 初回は12件中11件成功。失敗1件はテスト内の`fetch(blob:)`を意図したCSPが拒否したもの。テストを実際のダウンロード経路の確認へ直し、13/13成功。回復試験3件の追加後に16/16成功。**この失敗のためにアプリのCSPは緩和していません。**
+- [GitHub Actionsの品質チェック・公開run](https://github.com/yutoo77/listen-capture-spike/actions/runs/38979935117)が成功。Ubuntu上のChromium 151.0.7922.34でも16/16成功し、同一の`app.js`を配置しました。
+- 公開先を別のHTTP検証で確認（2026-10-17 08:11 JST）。静的ファイル8件のGETはすべて200、配信bytesはcommit内と一致。デモMP3の`Range: bytes=0-1023`は206、`Content-Range: bytes 0-1023/1262300`を返しました。
 
 再実行：`npm ci` → `npx playwright install chromium` → `npm run check` → `npm test`。環境によってはバンドル済みPlaywrightを`PLAYWRIGHT_MODULE`で指定できます。
 
