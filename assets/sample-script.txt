@@ -1,0 +1,13 @@
+Welcome to the Listen and Capture audio experiment. This sample recording is only used to check playback and recording controls in your browser. It is not an AI generated study explanation.
+
+Let us imagine a database transaction. A transaction is a group of operations treated as one unit. You might transfer money between two accounts. First, the balance is deducted from one account. Then, the other account receives the same amount. If the second operation fails, you do not want the first operation to remain in the database. The system should roll back the change, and return to a consistent state. That is one important reason transactions matter.
+
+Now think about the difference between a transaction and a database connection. A connection is how software communicates with a database. A transaction is a logical boundary for operations that should succeed together or fail together. Several transactions can take place over the lifetime of one connection, depending on the software and its configuration.
+
+Here is something to remember. Reliability is not the same as convenience. An audio note is convenient only when you can capture it at the moment you notice something. But it becomes reliable only if it survives network failures, unexpected interruptions, and later changes to the original document.
+
+Now, imagine listening to this recording with your phone in your pocket. When you hear a sentence that makes you curious, pause the playback, open the screen and record your own short thought. After recording, return to exactly the point where you paused. Later, play your note and return to the original source. This is the core behavior we want to test.
+
+In a future product, the voice memo will not just sit in the browser. A user account, database, authorization rules and private object storage will work together to preserve it securely. The server will also need to recover from failed uploads and avoid duplicate entries. But this first prototype has none of that, so we can test the actual audio interaction without confusing it with server problems.
+
+You can now try pausing playback, recording a voice memo, and resuming this sample. Try again with Bluetooth headphones, lock your phone, and watch how the browser behaves. Real hardware tests are more useful than guessing from a browser documentation page. Thank you for participating in the experiment.

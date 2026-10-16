@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <meta name="description" content="音声再生・録音・再開を調べるための技術検証プロトタイプ">
+  <title>Listen / Capture — Audio Spike</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="header">
+      <div class="wordmark"><span class="mark">◍</span> Listen / Capture</div>
+      <span class="flag">Technical Spike v0.1</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="title">
+        <p class="eyebrow">聴く。残す。振り返る。</p>
+        <h1 id="title">耳で学びながら、<br>思考を残す。</h1>
+        <p class="lead">まずは音声再生と録音の切り替えだけを実機で確かめます。<br>ログインもクラウド送信もない、音声UXの検証版です。</p>
+      </section>
+
+      <section class="panel player" aria-labelledby="player-title">
+        <div class="section-heading">
+          <span class="step">01</span>
+          <div>
+            <h2 id="player-title">聴く</h2>
+            <p>デモ音声、または手持ちの音声ファイルを再生</p>
+          </div>
+        </div>
+
+        <div class="track">
+          <div class="track-icon" aria-hidden="true">♫</div>
+          <div class="track-details">
+            <strong id="trackName">操作検証用の英語音声（デモ）</strong>
+            <span id="trackSubtitle">ブラウザ内でのみ再生されます</span>
+          </div>
+        </div>
+        <audio id="player" src="./assets/sample.mp3" preload="metadata"></audio>
+        <div class="seek-wrapper">
+          <label for="seek" class="sr-only">再生位置</label>
+          <input id="seek" type="range" min="0" max="1000" value="0" aria-label="再生位置">
+          <div class="time"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
+        </div>
+        <div class="controls">
+          <button id="rewind" class="soft-button" type="button" aria-label="10秒戻す">−10秒</button>
+          <button id="playToggle" class="primary-button" type="button">▶ 再生</button>
+          <button id="bookmark" class="soft-button" type="button">＋ 印だけ残す</button>
+        </div>
+        <div class="file-action">
+          <label for="audioFile">自分の音声ファイルを使う <span>MP3 / M4A / WAV など</span></label>
+          <input id="audioFile" type="file" accept="audio/*">
+          <button id="useDemo" class="link-button" type="button">デモに戻す</button>
+        </div>
+      </section>
+
+      <section class="panel capture" aria-labelledby="capture-title">
+        <div class="section-heading">
+          <span class="step">02</span>
+          <div>
+            <h2 id="capture-title">声で残す</h2>
+            <p>再生位置を記録してから、一時停止して録音</p>
+          </div>
+        </div>
+        <button id="recordToggle" class="record-button" type="button" disabled>
+          <span id="recordIcon" class="record-icon" aria-hidden="true"></span>
+          <span id="recordLabel">準備中...</span>
+        </button>
+        <div class="status" id="status" role="status" aria-live="polite">起動中です…</div>
+        <p class="hint">録音開始時だけマイクを取得します。終了後に停止して解放します。最初はスマホ画面を開いた状態で試してね。</p>
+      </section>
+
+      <section class="panel memories" aria-labelledby="memo-title">
+        <div class="section-heading">
+          <span class="step">03</span>
+          <div>
+            <h2 id="memo-title">振り返る</h2>
+            <p>声のメモ・印と、元の再生位置</p>
+          </div>
+        </div>
+        <div id="memos" class="memo-list" aria-live="polite"><p class="empty">まだメモはありません。</p></div>
+        <p class="hint">この試作品の記録はこのブラウザ内だけに保存します。Cloud同期・アカウント連携はありません。端末がデータを消す場合もあります。</p>
+      </section>
+
+      <details class="diagnostics">
+        <summary>技術検証・ログ <span>（テストのとき開く）</span></summary>
+        <div class="diag-body">
+          <dl class="facts" id="features"></dl>
+          <label class="toggle"><input id="headsetTest" type="checkbox"> 対応環境で「次の曲」の操作を「印」にする実験</label>
+          <p class="hint">イヤホンのジェスチャーが届く保証はありません。音声録音は開始せず、位置だけ保存します。</p>
+          <div class="logbar"><strong>イベントログ</strong><button type="button" id="exportLog" class="soft-button small">JSONを保存</button></div>
+          <pre id="eventLog" class="event-log" aria-label="技術検証ログ"></pre>
+        </div>
+      </details>
+    </main>
+
+    <footer class="footer">Audio Spike v0.1 · 実験用 / 本番サービスではありません</footer>
+  </div>
+</body>
+</html>
