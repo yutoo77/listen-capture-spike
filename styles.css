@@ -69,3 +69,14 @@ h1{font-size:clamp(30px,6vw,44px);line-height:1.36;letter-spacing:-.05em;margin:
 .sr-only{position:absolute;clip:rect(0,0,0,0);width:1px;height:1px;overflow:hidden}
 @media(max-width:480px){.shell{width:calc(100% - 24px)}.header{padding-top:17px}.intro{padding:34px 8px 25px}.panel{padding:20px 16px;border-radius:18px}.section-heading{margin-bottom:20px}.controls{gap:6px}.soft-button{font-size:11px;line-height:1.3}.record-button{min-height:110px}.file-action{gap:5px}.facts{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.record-button.recording{animation:none}*{scroll-behavior:auto}}
+[hidden]{display:none!important}
+button:disabled,input:disabled{cursor:not-allowed;opacity:.55}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #b57936;outline-offset:4px}
+.capture-clock{font-variant-numeric:tabular-nums;text-align:center;color:#9b403b;font-weight:750;margin:12px 0}
+.cancel-start{margin-top:12px;width:100%}
+.recovery{padding:16px;border:1px solid #bd7248;background:#fff5e8;border-radius:12px;margin-top:16px;overflow-wrap:anywhere}
+.recovery h3{font-size:15px;margin:0 0 8px}.recovery p{font-size:13px;line-height:1.7;margin:0 0 12px}
+.recovery-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.recovery-actions span{width:100%;font-size:12px}
+.recovery-actions a,.recovery-actions button{min-height:44px;display:inline-flex;align-items:center;padding:8px 12px;border:1px solid #c79570;border-radius:8px;background:#fff;color:#724220;font:inherit;font-size:12px;text-decoration:none}
+.memo-actions button,.memo-actions a{min-height:44px;display:inline-flex;align-items:center;font-size:12px}

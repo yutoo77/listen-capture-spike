@@ -1,0 +1,13 @@
+{
+  "name": "listen-capture-spike",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Static iPhone audio UX spike; no uploads or backend",
+  "scripts": {
+    "check": "node --check app.js && node --check tests/browser-regression.cjs && node --check tests/public-smoke.cjs",
+    "test": "node tests/browser-regression.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

@@ -1,104 +1,84 @@
-# Listen / Capture — Audio Technical Spike v0.1
+# Listen / Capture — Audio Technical Spike
 
-> 2026-10-17。**これは製品版ではなく、iPhoneの音声UXに関する技術検証**です。React・Django・AWSを構築する前に、ブラウザ標準APIの能力と実機の制約を確かめます。
+2026-10-17。iPhoneで「音声を聴く → 一時停止して声でメモ → 元の位置から聴く」が成立するかを確かめる、HTML・CSS・JavaScriptの静的な試作品です。
 
-## まず何ができる？
+**公開URL：公開・HTTPS到達確認待ち。** 確認済みURLは後からここへ記載します。
 
-1. 同梱の英語デモ音声（約3分）または自分の音声ファイルを再生する。
-2. 再生中に「メモを録音する」をタップすると、**その瞬間の再生時刻を先に確定**して一時停止する。
-3. マイクの許可後に自分の声を録音し、終了すると **ブラウザ内の IndexedDB** に保存する。
-4. 再生が許可されれば元の位置から自動再開し、拒否されれば再生ボタンで復帰する。
-5. 保存した声をあとから再生・音声ファイルとして保存できる。元の資料位置に戻ることもできる。
-6. 音声メモが不要な状況向けに、再生位置だけの「印」も保存できる。
-7. 「技術検証・ログ」から使用可能なAPIとイベント時刻を確認し、ログをJSONとして持ち出せる。
+専用公開リポジトリ：[yutoo77/listen-capture-spike](https://github.com/yutoo77/listen-capture-spike)
 
-**未対応**: PDF読込、文章の正確な読み上げ・文字起こし、クラウド保存、ユーザーアカウント、認証認可、イヤホンからの録音開始、画面ロック中のマイク制御、障害時の永続保証、AWS。これらが動くと主張するコードではありません。
+## 最初に試す3操作
 
-### なぜ今回は React/TypeScript ではなく Vanilla JS？
+iPhoneのSafariで公開URLを直接開き、画面を開いたまま試します。
 
-今回の問いは `audio.play()` → `getUserMedia()` / `MediaRecorder` → IndexedDB → `audio.play()` という**ブラウザの挙動**です。フレームワークやBackendの問題と切り離し、再現性と原因追跡を優先しました。検証で確かめた振る舞いを、本体のReact/TypeScriptに移します。
+1. **「▶ 再生」**を押し、デモ音声を数秒聴く。
+2. **「メモを録音する」**を押し、初回はマイクを許可して、5秒ほど話す。
+3. **「録音を終了する」**を押し、保存されたメモと再生復帰を確認する。自動再開されなければ「▶ 再生」を押す。
 
-## PCでの試し方
+続けて、メモの録音再生と「元の位置」への復帰を試してください。詳しい実機記録は [TEST_PLAN.md](./TEST_PLAN.md)、実施済み検証は [VALIDATION.md](./VALIDATION.md) に分けています。
 
-1. ZIPを展開して、`index.html` のあるフォルダを開く。
-2. ターミナルから以下を実行する。
+## できることと範囲
 
-```bash
+- 同梱デモ音声、または端末で選んだ音声ファイルを再生する。
+- マイク取得より先に再生位置を確定し、一時停止して最長60秒のメモを録音する。
+- 録音と参照位置をこのブラウザのIndexedDBへ保存し、再生・削除・ダウンロードする。
+- 音声メモの代わりに、再生位置だけの「印」を保存する。
+- 技術検証ログを表示・JSONで書き出す。ログは音声そのものを含みません。
+- 対応環境でMedia Sessionの再生操作を試す。「次の曲 → 印」は任意の実験です。
+
+**PDF・TTS・STT・クラウド保存・アカウント・認証認可はありません。** ロック中の録音開始、イヤホンだけでの録音開始、バックグラウンド録音の継続は保証しません。ホーム画面向けManifestはありますが、Service Workerを含まずオフラインアプリではありません。
+
+## 保存・復旧で知っておくこと
+
+- 選択した音声と録音をアプリからサーバーへアップロードする処理はありません。サイト本体とデモ音声はHTTPSで取得します。
+- ローカル元音声は50MiB以下が対象です。内容のSHA-256を参照の識別に使います。**元音声の実データは永続保存しません。** 再読込後、対応するメモへ戻るには同じファイルを選び直してください。
+- 録音中は元音声・別メモの再生、シーク、音源切替を止め、録音へ音が混入する操作を防ぎます。元音声とメモ音声を同時再生しません。
+- 録音後のDB保存に失敗した場合、未保存録音の復旧欄から保存を再試行するか、音声ファイルをダウンロードしてください。**復旧欄のデータが再読込・タブ終了後も残る保証はありません。** 未保存のまま画面を閉じないでください。
+- 録音中に画面が隠れた場合は停止を試みます。OSによるページ終了・中断前に必ず保存できるとは限りません。重要な音声の保存には使わないでください。
+- IndexedDBはこのブラウザ内の保存です。Safariとホーム画面版の共有・保持を前提にせず、必要な録音はダウンロードしてください。ブラウザのデータ削除や容量不足でも失われます。
+
+## 公開サイトとプライバシー
+
+公開GitHubリポジトリとPagesには、静的なコードとデモアセットのみを配置します。講義資料、利用者の録音、個人情報、APIキーはコミットしません。共有端末を避け、**本名・健康情報・研究の秘密などを含む録音で試さないでください。**
+
+GitHub Pagesのプロジェクトサイトは、同じ `https://<user>.github.io` 配下の別プロジェクトと同一originです。パスが違ってもブラウザStorageのセキュリティ境界にはなりません。同一originの別サイトのスクリプトから、IndexedDBなどへアクセスされ得ます。この公開先は音声UXの検証用です。機微情報を扱う本体では、専用origin、認証認可、非公開Storageを改めて設計します。
+
+ログにも日時・再生位置・ファイル情報等が含まれ得ます。共有前に内容を確認してください。
+
+## PCで動かす
+
+このフォルダーで以下を実行し、`http://localhost:8000/` を開きます。
+
+```sh
 python -m http.server 8000
 ```
 
-3. PCのブラウザで `http://localhost:8000/` を開く。`localhost` はマイクAPIを利用できる **secure contextの例外**です。
-4. 「再生」→「メモを録音する」→マイク許可→5秒話す→「録音を終了する」→保存と再生復帰を確認。
+`localhost`はマイクAPIを利用できる安全なコンテキストの例外ですが、PCのlocalhostをiPhoneからそのまま開けるわけではありません。iPhoneではトップレベルのHTTPS URLを使用します。`file://`の直接起動やiframeプレビューは試験の基準にしません。
 
-※ `index.html` のダブルクリック（`file://`）はブラウザにより動作差が出るため、推奨しません。
+## 自動チェック
 
-## iPhoneのSafariでの試し方（HTTPSが必須）
+Node.jsとnpmのある環境で、次を順に実行します。
 
-マイクAPIは安全なコンテキストが原則です。**PCの `localhost` と iPhoneから見た `localhost` は別物**なので、PC側だけサーバーを起動してもiPhoneのマイク試験には不十分。いちばん簡単なのはGitHub Pagesでこの静的な試作品をHTTPS配信することです。
+```sh
+npm ci
+npx playwright install chromium
+npm run check
+npm test
+```
 
-1. GitHubで新規の**テスト用リポジトリ**（例: `listen-capture-spike`）を作成。無料プランのPagesを使うなら通常は公開リポジトリが必要。
-2. このフォルダの `index.html`, `app.js`, `styles.css`, `manifest.webmanifest`, `assets/`, `.nojekyll` をそのリポジトリのルートへアップロード／pushする。
-3. リポジトリの **Settings → Pages → Build and deployment** で **Deploy from a branch**, **main**, **/(root)** を設定。
-4. 発行された `https://<GitHubユーザー名>.github.io/<リポジトリ名>/` をiPhoneのSafariで開く。
-5. まずSafariでテスト。その後「共有 → ホーム画面に追加」でPWA相当の別動作を比較する。Manifest付きのホーム画面Webアプリが起動したら、Safariタブとの挙動の違いを確認。**Service Workerは含まないためオフライン動作はできません**。
+テストはローカルサーバーを起動し、Chromiumの擬似マイクで回帰試験を行います。物理マイク、iPhone、ロック画面、Bluetoothの試験ではありません。CIでも静的チェックと回帰試験を行い、品質チェック後にPagesへ配置します。
 
-**公開時の注意**: GitHub Pagesはサイト自体が公開されます。このリポジトリに講義資料・録音・個人情報・APIキーなどをコミットしないでください。ページ上で選ぶローカル音声ファイルと録音はネットワークへ送信されません。ただしブラウザ内IndexedDBも恒久保存を保証するものではありません。公共・共有端末ではテストしないでください。
+## 実装を読む順番
 
-GitHub Pages公式: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
+1. `index.html`：再生・録音・復旧・メモの操作。
+2. `app.js`：再生位置の確定、録音セッションの開始・停止・マイク解放、保存と再開。
+3. `app.js`：IndexedDB、元音声の識別、Media Session、イベントログ。
+4. `TEST_PLAN.md`：Safari・ホーム画面・Bluetooth・ロック・割込みの実機条件。
 
-## 週末P0テスト（この順番で）
+この段階はフレームワークやBackendの選定ではなく、ブラウザの音声操作の検証です。Desktopの擬似マイク試験が成功しても、iPhone実機の成功には数えません。
 
-| テスト | 操作 | 成功なら何が分かる？ |
-|---|---|---|
-| P0-1 | iPhone Safariで再生 → 画面ロック → 解除 → 続きを再生 | 音声が画面ロックに耐える条件 |
-| P0-2 | 再生 → メモ録音 → 停止 → 再生を5回 | 再生とマイク切替が安定するか |
-| P0-3 | AirPods等を接続し同じことを試す | 入出力経路切替の問題有無 |
-| P0-4 | 録音後に再読込 → メモを再生 | IndexedDBへの保存が成立するか |
-| P0-5 | 同条件でホーム画面から起動 | Safariタブとの差 |
-| P0-6 任意 | 「次の曲→印」実験を有効にしてイヤホン操作 | Media SessionイベントがiOSから届くか（届かなくても仕様上あり得る） |
+## 参考
 
-必要なら20分以上の音声ファイルを自分で選んで再生時間のテストをしてください。同梱デモは約3分です。
-
-### 計測してほしいこと
-
-- Safariタブとホーム画面で、ロック中の**再生継続**と**再開**に違いはある？
-- 本体マイク・Bluetoothイヤホンで、録音が無音／小音量／スピーカー漏れになることはある？
-- 録音開始・終了時、予期しない再生位置のズレはある？
-- **元の位置に戻れること**と**元音声ファイルを再度選ばなくていいこと**は別。ローカル音声ファイルは本体プロトタイプのDBに保存されない。
-- `exportLog` でログをダウンロードして、画面ロック・録音切替時のイベントを比較。
-
-テストシートは `TEST_PLAN.md`。
-
-## コードを理解するための地図
-
-| ファイル | 何をしているか |
-|---|---|
-| `index.html` | UIの意味構造と音声操作のボタン |
-| `styles.css` | スマホファーストの最小UI |
-| `app.js` → `beginRecording()` | 再生位置を先に保存、音声を停止、権限取得、録音開始 |
-| `app.js` → `endRecording()` / `finalizeRecording()` | 録音を停止し、IndexedDB保存、可能なら再開 |
-| `app.js` → `openDB()` / `dbTransaction()` | ブラウザ内データ保存。**Cloudではない** |
-| `app.js` → `installMediaSession()` | 再生・巻き戻し・実験的な「次の曲」イベントの登録 |
-| `app.js` → `renderMemos()` | 保存データを安全にテキスト表示して録音を再生 |
-
-### 重要な設計判断
-
-- **再生位置をマイク許可より先に記録**する。許可に時間がかかるので、後で参照位置がズレるのを防ぐ。
-- `MediaRecorder.isTypeSupported()` で音声形式を選び、M4A固定などの仮定を置かない。
-- 録音終了時はマイクのTrackを停止し、権限と音声経路を解放する。
-- クラウドは使わない。録音はIndexedDB、録音音声のURLは`blob:`、選択元音声も`blob:` URL。**どちらも認可を伴う本番Storageではない**。
-- 再生復帰がブラウザ側から拒否されたら利用者のタップで復帰する。API呼び出しの成功を当然視しない。
-- メモは同じorigin内のブラウザに保存されるが、ブラウザによってデータが削除され得る。重要な録音はダウンロードしてバックアップする。
-
-## 次の本体開発への移行
-
-P0で主要なブラウザ挙動が分かったら、React/TypeScript UIとDjango/DRF APIを分け、PostgreSQL（ユーザー・資料版・録音参照位置・メモ）と、非公開Object Storage（実ファイル）を採用する。AWSは候補であって、P0段階ではサービス契約や課金は不要。
-
-**最初のVertical Slice**: ログイン → テキスト資料登録 → 音声再生 → 録音 → 保存 → 元の位置に戻る → 自分のメモを確認。
-
-### 参考資料
-
-- MDN `getUserMedia` / secure context: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-- MDN `MediaRecorder.isTypeSupported`: https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static
-- MDN `MediaSession.setActionHandler`: https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler
-- GitHub Pages HTTPS: https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https
+- [getUserMediaと安全なコンテキスト](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia)
+- [MediaRecorderの音声形式の対応確認](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static)
+- [Media Sessionの操作ハンドラー](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler)
+- [GitHub PagesのHTTPS](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)
